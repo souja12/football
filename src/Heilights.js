@@ -142,8 +142,8 @@ const Highlights = () => {
                     <div className="container">
                         <div className="row align-items-center">
                             <div className="col-lg-5 ml-auto">
-                                <h1 className="text-white">UCL And All Match Event</h1>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Soluta, molestias repudiandae pariatur.</p>
+                                <h1 className="text-white">UCL And All Match Heilights</h1>
+                                <p>Get all latest matches Heilights,player performance goals and many more</p>
                                 <div id="date-countdown"></div>
 
                             </div>

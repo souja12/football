@@ -83,8 +83,8 @@ function NewsComponent() {
                     <div className="container">
                         <div className="row align-items-center">
                             <div className="col-lg-5 ml-auto">
-                                <h1 className="text-white">UCL And All Match Event</h1>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Soluta, molestias repudiandae pariatur.</p>
+                                <h1 className="text-white">Get All Football News</h1>
+                                <p>Get all football news controversy transfer market interviews and many more</p>
                                 <div id="date-countdown"></div>
                                 {/* <p>
                                     <a href="#" className="btn btn-primary py-3 px-4 mr-3">Book Ticket</a>

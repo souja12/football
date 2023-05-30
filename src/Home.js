@@ -227,8 +227,8 @@ const Home = () => {
                                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Soluta, molestias repudiandae pariatur.</p>
                                 <div id="date-countdown"></div>
                                 <p>
-                                    <a href="#" className="btn btn-primary py-3 px-4 mr-3">Book Ticket</a>
-                                    <a href="#" className="more light">Learn More</a>
+                                    <Link to="/matches" style={{ color: 'white' }}><a style={{backgroundColor:'#ee1e46', border: '1px solid #ee1e46'}} className="btn btn-primary py-3 px-4 mr-3">All Matches</a></Link>
+                                    <a className="more light">Learn More</a>
                                 </p>
                             </div>
                         </div>
