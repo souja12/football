@@ -16,7 +16,7 @@ const Allmatches = () => {
     let endDate = new Date(currentDate.getTime() + 10 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
     // Construct the API request URL
-    let URL = `http://localhost:3001/http://api.football-data.org/v4/matches?competitions=CL,PD,PL,BL1,SA,FL1&dateFrom=${startDate}&dateTo=${endDate}`;
+    let URL = `http://localhost:3002/http://api.football-data.org/v4/matches?competitions=CL,PD,PL,BL1,SA,FL1&dateFrom=${startDate}&dateTo=${endDate}`;
 
     //const URL = 'http://localhost:3001/https://api.football-data.org/v4/competitions/2001/matches?status=FINISHED&limit=15';
 

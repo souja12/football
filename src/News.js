@@ -68,11 +68,11 @@ function NewsComponent() {
                             <div className="ml-auto">
                                 <nav className="site-navigation position-relative text-right" role="navigation">
                                     <ul className="site-menu main-menu js-clone-nav mr-auto">
-                                        <li  style={{ color: 'white', width: 'calc(100% / 5)' }}><a>Home</a></li>
-                                        <Link to="/matches" style={{ color: 'white', width: 'calc(100% / 5)' }}><li  style={{ listStyle: 'none' }}><a className="nav-link">Matches</a></li></Link>
-                                        <Link to="/players" style={{ color: 'white', width: 'calc(100% / 5)' }}><li  style={{ listStyle: 'none' }}><a className="nav-link">Players</a></li></Link>
+                                        <Link to="/" style={{ color: 'white', width: 'calc(100% / 5)' }}><li style={{ listStyle: 'none' }}><a className="nav-link">Home</a></li></Link>
+                                        <Link to="/matches" style={{ color: 'white', width: 'calc(100% / 5)' }}><li style={{ listStyle: 'none' }}><a className="nav-link">Matches</a></li></Link>
+                                        <Link to="/players" style={{ color: 'white', width: 'calc(100% / 5)' }}><li style={{ listStyle: 'none' }}><a className="nav-link">Players</a></li></Link>
                                         <Link to="/news" style={{ color: 'white', width: 'calc(100% / 5)' }}><li className="active" style={{ listStyle: 'none' }}><a className="nav-link">News</a></li></Link>
-                                        <Link to="/highlights"  style={{ color: 'white', width: 'calc(100% / 5)' }}><li  style={{ listStyle: 'none' }}><a className="nav-link">Highlights</a></li></Link>
+                                        <Link to="/highlights" style={{ color: 'white', width: 'calc(100% / 5)' }}><li style={{ listStyle: 'none' }}><a className="nav-link">Highlights</a></li></Link>
                                     </ul>
                                 </nav>
                             </div>

@@ -84,7 +84,7 @@ const Home = () => {
     let currentDatee = new Date();
     let startDatee = new Date(currentDatee.getTime() - 0 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
     let endDatee = new Date(currentDatee.getTime() + 10 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-    let URLL = `http://localhost:3001/http://api.football-data.org/v4/matches?competitions=CL,PD,PL,BL1,SA,FL1&dateFrom=${startDatee}&dateTo=${endDatee}`;
+    let URLL = `http://localhost:3002/http://api.football-data.org/v4/matches?competitions=CL,PD,PL,BL1,SA,FL1&dateFrom=${startDatee}&dateTo=${endDatee}`;
 
     useEffect(() => {
         fetchNextMatch();
@@ -206,7 +206,7 @@ const Home = () => {
                             <div className="ml-auto">
                                 <nav className="site-navigation position-relative text-right" role="navigation">
                                     <ul className="site-menu main-menu js-clone-nav mr-auto">
-                                        <li className="active" style={{ color: 'white', width: 'calc(100% / 5)' }}><a>Home</a></li>
+                                        <Link to="/matches" style={{ color: 'white', width: 'calc(100% / 5)' }}><li className="active" style={{ listStyle: 'none' }}><a className="nav-link">Home</a></li></Link>
                                         <Link to="/matches" style={{ color: 'white', width: 'calc(100% / 5)' }}><li style={{ listStyle: 'none' }}><a className="nav-link">Matches</a></li></Link>
                                         <Link to="/players" style={{ color: 'white', width: 'calc(100% / 5)' }}><li style={{ listStyle: 'none' }}><a className="nav-link">Players</a></li></Link>
                                         <Link to="/news" style={{ color: 'white', width: 'calc(100% / 5)' }}><li style={{ listStyle: 'none' }}><a className="nav-link">News</a></li></Link>
