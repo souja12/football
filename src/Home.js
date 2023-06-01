@@ -7,6 +7,9 @@ import { Link } from 'react-router-dom';
 import { Carousel, Row, Col } from 'antd';
 import { PlayCircleOutlined } from '@ant-design/icons';
 
+
+const PAGE_SIZE = 3
+
 const Home = () => {
     const [match, setMatch] = useState(null);
     const API_KEY = 'e1b28aeb564f4851abae6d5ecaa29beb'; // Replace with your API key
@@ -123,16 +126,26 @@ const Home = () => {
     //for video slider 
     const [videos, setVideos] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [currentPagee, setCurrentPagee] = useState(1);
+    const [hasMoreVideos, setHasMoreVideos] = useState(true);
+    const [selectedCompetition, setSelectedCompetition] = useState('');
+    const [competitionOptions, setCompetitionOptions] = useState([]);
+
+    useEffect(() => {
+        fetchVideos();
+    }, []);
 
     const fetchVideos = () => {
         setIsLoading(true);
+        const startIndex = (currentPagee - 1) * PAGE_SIZE;
+        const endIndex = startIndex + PAGE_SIZE;
 
         fetch(
-            `https://www.scorebat.com/video-api/v3/feed/?token=ODg2ODZfMTY4NDc0MjEyNl84MTVhNzk1MDBjN2RkYjk4MDU1ODhiZjk5MzUyZWFjOTUwOTYxZjJm`
+            `https://www.scorebat.com/video-api/v3/feed/?token=ODg2ODZfMTY4NDc0MjEyNl84MTVhNzk1MDBjN2RkYjk4MDU1ODhiZjk5MzUyZWFjOTUwOTYxZjJm&page=${currentPage}&limit=${PAGE_SIZE}`
         )
             .then(response => response.json())
             .then(data => {
-                const firstThreeVideos = data.response.slice(0, 3).map(video => {
+                const allVideos = data.response.map(video => {
                     const videoUrl = video.videos[0].embed.match(/src='([^']+)'/)[1];
                     const date = new Date(video.date);
                     const formattedDate = `${date.getDate()} ${getMonthName(
@@ -144,8 +157,17 @@ const Home = () => {
                     return { ...video, videoUrl, formattedDate };
                 });
 
-                setVideos(firstThreeVideos);
+                setVideos(prevVideos => [...prevVideos, ...allVideos]);
                 setIsLoading(false);
+
+                if (allVideos.length < PAGE_SIZE) {
+                    setHasMoreVideos(false);
+                }
+
+                const uniqueCompetitions = Array.from(
+                    new Set(allVideos.map(video => video.competition))
+                );
+                setCompetitionOptions(uniqueCompetitions);
             })
             .catch(error => {
                 console.error(error);
@@ -153,33 +175,52 @@ const Home = () => {
             });
     };
 
-    useEffect(() => {
-        fetchVideos();
-    }, []);
-
-    const getMonthName = month => {
-        const months = [
-            'January',
-            'February',
-            'March',
-            'April',
+    const getMonthName = monthIndex => {
+        const monthNames = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
             'May',
-            'June',
-            'July',
-            'August',
-            'September',
-            'October',
-            'November',
-            'December'
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec'
         ];
-        return months[month];
+        return monthNames[monthIndex];
     };
 
     const formatTime = (hours, minutes) => {
-        const formattedHours = hours.toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const formattedHours = hours % 12 || 12;
         const formattedMinutes = minutes.toString().padStart(2, '0');
-        return `${formattedHours}:${formattedMinutes}`;
+        return `${formattedHours}:${formattedMinutes} ${ampm}`;
     };
+
+    const handleLoadMore = () => {
+        setCurrentPagee(prevPage => prevPage + 1);
+    };
+
+    const handleCompetitionChange = e => {
+        setSelectedCompetition(e.target.value);
+        setCurrentPagee(1);
+        setVideos([]);
+    };
+
+    useEffect(() => {
+        setVideos([]); // Reset videos when selectedCompetition changes
+        setCurrentPagee(1);
+        setHasMoreVideos(true);
+        fetchVideos();
+    }, [selectedCompetition]);
+
+    const displayedVideos = videos.filter(
+        video =>
+            !selectedCompetition || video.competition === selectedCompetition
+    ).slice(0, currentPagee * PAGE_SIZE);
 
     return (
         <div>
@@ -227,7 +268,7 @@ const Home = () => {
                                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Soluta, molestias repudiandae pariatur.</p>
                                 <div id="date-countdown"></div>
                                 <p>
-                                    <Link to="/matches" style={{ color: 'white' }}><a style={{backgroundColor:'#ee1e46', border: '1px solid #ee1e46'}} className="btn btn-primary py-3 px-4 mr-3">All Matches</a></Link>
+                                    <Link to="/matches" style={{ color: 'white' }}><a style={{ backgroundColor: '#ee1e46', border: '1px solid #ee1e46' }} className="btn btn-primary py-3 px-4 mr-3">All Matches</a></Link>
                                     <a className="more light">Learn More</a>
                                 </p>
                             </div>
@@ -436,35 +477,83 @@ const Home = () => {
                     </div>
                 </div>
 
-                <div className="site-section">
-                    <div className="container">
-                        <Row align="middle" justify="space-between">
-                            <Col span={12} className="title-section">
-                                <h2 className="heading">Videos</h2>
-                            </Col>
-                            <Col span={12} className="text-right">
-                                {/* Add custom navigation here */}
-                            </Col>
-                        </Row>
-
-                        <Carousel className="owl-4-slider">
-                            {videos.map((video, index) => (
-                                <div className="item" key={index}>
-                                    <div className="video-media">
-                                        <img src={video.thumbnail} alt="Image" className="img-fluid" />
-                                        <a href={video.videoUrl} className="d-flex play-button align-items-center" data-fancybox>
-                                            <span className="icon mr-3">
-                                                <PlayCircleOutlined />
-                                            </span>
-                                            <div className="caption">
-                                                <h3 className="m-0">{video.title}</h3>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
-                            ))}
-                        </Carousel>
+                <div className="container">
+                    <div className="row">
+                        <div className="col-12 title-section">
+                            <h2 className="heading">Videos</h2>
+                        </div>
                     </div>
+                </div>
+                <div
+                    style={{
+                        display: 'flex',
+                        overflowX: 'auto',
+                        whiteSpace: 'nowrap',
+                    }}
+                >
+                    {displayedVideos.map((video, index) => (
+                        <div
+                            key={video.title}
+                            style={{
+                                width: 'calc(50% - 20px)',
+                                marginBottom: '20px',
+                                border: '1px solid #ccc',
+                                borderRadius: '4px',
+                                padding: '20px',
+                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+                            }}
+                        >
+                            <h2 style={{ marginBottom: '10px' }}>{video.title}</h2>
+                            <p style={{ marginBottom: '5px' }}>{video.competition}</p>
+                            <p style={{ marginBottom: '5px' }}>{video.formattedDate}</p>
+                            <div
+                                style={{
+                                    position: 'relative',
+                                    width: '100%',
+                                    height: '0',
+                                    paddingBottom: '56.25%',
+                                    marginBottom: '10px'
+                                }}
+                            >
+                                <iframe
+                                    src={video.videoUrl}
+                                    title={video.title}
+                                    allowFullScreen
+                                    allow="autoplay; fullscreen"
+                                    style={{
+                                        position: 'absolute',
+                                        top: '0',
+                                        left: '0',
+                                        width: '100%',
+                                        height: '100%',
+                                        border: 'none',
+                                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                                        borderRadius: '4px'
+                                    }}
+                                ></iframe>
+                            </div>
+                        </div>
+                    ))}
+                    {isLoading && <p>Loading...</p>}
+                    {!isLoading && hasMoreVideos && (
+                        <Link to='/highlights'>
+                            <button
+                                style={{
+                                    padding: '10px 20px',
+                                    borderRadius: '4px',
+                                    border: 'none',
+                                    background: '#007bff',
+                                    color: '#fff',
+                                    cursor: 'pointer',
+                                    width: '100%',
+                                    height: '17%',
+                                    marginTop: '120%'
+                                }}
+                            >
+                                See More
+                            </button>
+                        </Link>
+                    )}
                 </div>
 
                 {/* <div class="container site-section">

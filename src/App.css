@@ -1633,6 +1633,19 @@ h5,
   }
 }
 
+@keyframes wave {
+  0% {transform: scale(0.9)}
+    100% {transform: scale(1)}
+}
+
+@keyframes wave-gradient {
+   0% {transform: scale(0.9)}
+    100% {transform: scale(1)}
+}
+
+
+
+
 
 
 /*

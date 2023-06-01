@@ -1,8 +1,73 @@
 import React, { useState, useEffect } from 'react';
 import Footer from './Footer';
 import { Link } from 'react-router-dom';
+import Skeleton from 'react-loading-skeleton';
 
 const PAGE_SIZE = 6; // Number of videos to fetch per page
+
+const SkeletonLoader = () => {
+    // You can customize the skeleton loader styles here
+    return (
+        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+            {[...Array(PAGE_SIZE)].map((_, index) => (
+                <div
+                    key={index}
+                    style={{
+                        width: 'calc(50% - 20px)',
+                        marginBottom: '20px',
+                        border: '1px solid #ddd',
+                        borderRadius: '8px',
+                        padding: '15px',
+                        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                        margin: '0 10px',
+                    }}
+                >
+                    {/* Skeleton loader elements */}
+                    <div
+                        style={{
+                            height: '8px',
+                            background: 'linear-gradient(90deg, #f2f2f2, #ddd, #f2f2f2)',
+                            marginBottom: '10px',
+                            animation: 'wave 1.5s ease-in-out infinite',
+                            width:'500px'
+                        }}
+                    ></div>
+                    <div
+                        style={{
+                            height: '16px',
+                            background: 'linear-gradient(90deg, #f2f2f2, #ddd, #f2f2f2)',
+                            marginBottom: '10px',
+                            animation: 'wave 1.5s ease-in-out infinite',
+                        }}
+                    ></div>
+                    <div
+                        style={{
+                            position: 'relative',
+                            width: '100%',
+                            height: '150px',
+                            background: 'linear-gradient(90deg, #f2f2f2, #ddd, #f2f2f2)',
+                            marginBottom: '10px',
+                            overflow: 'hidden',
+                        }}
+                    >
+                        <div
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: '-100%',
+                                right: 0,
+                                bottom: 0,
+                                width: '200%',
+                                background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
+                                animation: 'wave-gradient 1.5s ease-in-out infinite',
+                            }}
+                        ></div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+};
 
 const Highlights = () => {
     const [videos, setVideos] = useState([]);
@@ -21,42 +86,40 @@ const Highlights = () => {
         const startIndex = (currentPage - 1) * PAGE_SIZE;
         const endIndex = startIndex + PAGE_SIZE;
 
-        fetch(
-            `https://www.scorebat.com/video-api/v3/feed/?token=ODg2ODZfMTY4NDc0MjEyNl84MTVhNzk1MDBjN2RkYjk4MDU1ODhiZjk5MzUyZWFjOTUwOTYxZjJm&page=${currentPage}&limit=${PAGE_SIZE}`
-        )
-            .then(response => response.json())
-            .then(data => {
-                const allVideos = data.response.map(video => {
-                    const videoUrl = video.videos[0].embed.match(/src='([^']+)'/)[1];
-                    const date = new Date(video.date);
-                    const formattedDate = `${date.getDate()} ${getMonthName(
-                        date.getMonth()
-                    )} ${date.getFullYear()} ${formatTime(
-                        date.getHours(),
-                        date.getMinutes()
-                    )}`;
-                    return { ...video, videoUrl, formattedDate };
+        setTimeout(() => {
+            fetch(
+                `https://www.scorebat.com/video-api/v3/feed/?token=ODg2ODZfMTY4NDc0MjEyNl84MTVhNzk1MDBjN2RkYjk4MDU1ODhiZjk5MzUyZWFjOTUwOTYxZjJm&page=${currentPage}&limit=${PAGE_SIZE}`
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    const allVideos = data.response.map((video) => {
+                        const videoUrl = video.videos[0].embed.match(/src='([^']+)'/)[1];
+                        const date = new Date(video.date);
+                        const formattedDate = `${date.getDate()} ${getMonthName(
+                            date.getMonth()
+                        )} ${date.getFullYear()} ${formatTime(date.getHours(), date.getMinutes())}`;
+                        return { ...video, videoUrl, formattedDate };
+                    });
+
+                    setVideos((prevVideos) => [...prevVideos, ...allVideos]);
+                    setIsLoading(false);
+
+                    if (allVideos.length < PAGE_SIZE) {
+                        setHasMoreVideos(false);
+                    }
+
+                    const uniqueCompetitions = Array.from(new Set(allVideos.map((video) => video.competition)));
+                    setCompetitionOptions(uniqueCompetitions);
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setIsLoading(false);
                 });
-
-                setVideos(prevVideos => [...prevVideos, ...allVideos]);
-                setIsLoading(false);
-
-                if (allVideos.length < PAGE_SIZE) {
-                    setHasMoreVideos(false);
-                }
-
-                const uniqueCompetitions = Array.from(
-                    new Set(allVideos.map(video => video.competition))
-                );
-                setCompetitionOptions(uniqueCompetitions);
-            })
-            .catch(error => {
-                console.error(error);
-                setIsLoading(false);
-            });
+        }, 1000); // Delay of 2000 milliseconds (2 seconds)
     };
 
-    const getMonthName = monthIndex => {
+
+    const getMonthName = (monthIndex) => {
         const monthNames = [
             'Jan',
             'Feb',
@@ -69,7 +132,7 @@ const Highlights = () => {
             'Sep',
             'Oct',
             'Nov',
-            'Dec'
+            'Dec',
         ];
         return monthNames[monthIndex];
     };
@@ -82,10 +145,10 @@ const Highlights = () => {
     };
 
     const handleLoadMore = () => {
-        setCurrentPage(prevPage => prevPage + 1);
+        setCurrentPage((prevPage) => prevPage + 1);
     };
 
-    const handleCompetitionChange = e => {
+    const handleCompetitionChange = (e) => {
         setSelectedCompetition(e.target.value);
         setCurrentPage(1);
         setVideos([]);
@@ -98,12 +161,80 @@ const Highlights = () => {
         fetchVideos();
     }, [selectedCompetition]);
 
-    const displayedVideos = videos.filter(
-        video =>
-            !selectedCompetition || video.competition === selectedCompetition
-    ).slice(0, currentPage * PAGE_SIZE);
+    const displayedVideos = videos
+        .filter((video) => !selectedCompetition || video.competition === selectedCompetition)
+        .slice(0, currentPage * PAGE_SIZE);
 
     return (
+        // <div>
+        //     <div className="site-wrap">
+        //         {/* Header code... */}
+        //         <div class="site-mobile-menu site-navbar-target">
+        //             <div class="site-mobile-menu-header">
+        //                 <div class="site-mobile-menu-close">
+        //                     <span class="icon-close2 js-menu-toggle"></span>
+        //                 </div>
+        //             </div>
+        //             <div class="site-mobile-menu-body"></div>
+        //         </div>
+
+
+        //         <header className="site-navbar py-4" role="banner">
+        //             <div className="container">
+        //                 <div className="d-flex align-items-center">
+        //                     <div className="site-logo">
+        //                         <a href="index.html">
+        //                             <img src="https://i.ibb.co/rFTrxDL/logo.png" alt="Logo" />
+        //                         </a>
+        //                     </div>
+        //                     <div className="ml-auto">
+        //                         <nav className="site-navigation position-relative text-right" role="navigation">
+        //                             <ul className="site-menu main-menu js-clone-nav mr-auto">
+        //                                 <Link to="/" style={{ color: 'white', width: 'calc(100% / 5)' }}><li style={{ listStyle: 'none' }}><a className="nav-link">Home</a></li></Link>
+        //                                 <Link to="/matches" style={{ color: 'white', width: 'calc(100% / 5)' }}><li style={{ listStyle: 'none' }}><a className="nav-link">Matches</a></li></Link>
+        //                                 <Link to="/players" style={{ color: 'white', width: 'calc(100% / 5)' }}><li style={{ listStyle: 'none' }}><a className="nav-link">Players</a></li></Link>
+        //                                 <Link to="/news" style={{ color: 'white', width: 'calc(100% / 5)' }}><li style={{ listStyle: 'none' }}><a className="nav-link">News</a></li></Link>
+        //                                 <Link to="/highlights" style={{ color: 'white', width: 'calc(100% / 5)' }}><li className="active" style={{ listStyle: 'none' }}><a className="nav-link">Highlights</a></li></Link>
+        //                             </ul>
+        //                         </nav>
+        //                     </div>
+        //                 </div>
+        //             </div>
+        //         </header>
+        //         <div className="hero overlay" style={{ backgroundImage: "url('https://i.ibb.co/5rhf0LL/bg-3.jpg')" }}>
+        //             <div className="container">
+        //                 <div className="row align-items-center">
+        //                     <div className="col-lg-5 ml-auto">
+        //                         <h1 className="text-white">UCL And All Match Heilights</h1>
+        //                         <p>Get all latest matches Heilights,player performance goals and many more</p>
+        //                         <div id="date-countdown"></div>
+
+        //                     </div>
+        //                 </div>
+        //             </div>
+        //         </div>
+        //     </div>
+        //     {/* Rest of the component code... */}
+
+        //     {isLoading && <SkeletonLoader />}
+        //     {!isLoading && hasMoreVideos && (
+        //         <button
+        //             onClick={handleLoadMore}
+        //             style={{
+        //                 padding: '10px 20px',
+        //                 borderRadius: '4px',
+        //                 border: 'none',
+        //                 background: '#007bff',
+        //                 color: '#fff',
+        //                 cursor: 'pointer',
+        //                 width: '100%',
+        //             }}
+        //         >
+        //             Load More
+        //         </button>
+        //     )}
+        //     <Footer />
+        // </div>
         <div>
             <div class="site-wrap">
                 <div class="site-mobile-menu site-navbar-target">
@@ -168,6 +299,8 @@ const Highlights = () => {
                     display: 'flex',
                     flexWrap: 'wrap',
                     justifyContent: 'space-between'
+                    // overflowX: 'auto',
+                    // whiteSpace: 'nowrap',
                 }}
             >
                 {displayedVideos.map((video, index) => (
@@ -213,7 +346,8 @@ const Highlights = () => {
                         </div>
                     </div>
                 ))}
-                {isLoading && <p>Loading...</p>}
+
+                {isLoading && <p><SkeletonLoader /></p>}
                 {!isLoading && hasMoreVideos && (
                     <button
                         onClick={handleLoadMore}
