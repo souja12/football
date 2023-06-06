@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Footer from './Footer';
 import { Link } from 'react-router-dom';
-import Skeleton from 'react-loading-skeleton';
+
 
 const PAGE_SIZE = 6; // Number of videos to fetch per page
 

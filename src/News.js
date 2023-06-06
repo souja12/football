@@ -3,6 +3,7 @@ import Footer from './Footer';
 import { Link } from 'react-router-dom';
 
 
+
 const API_KEY = '6d80ae95-4398-420d-870b-ad0c8f0f6b84'; // Replace with your actual API key
 
 function NewsComponent() {
@@ -156,7 +157,6 @@ function NewsComponent() {
                     </button>
                 </div>
             )}
-            <Footer />
             <br />
         </div>
     );
