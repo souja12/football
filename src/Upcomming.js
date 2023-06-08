@@ -10,10 +10,10 @@ const Allmatches = () => {
     let currentDate = new Date();
 
     // Calculate the start date (5 days before today)
-    let startDate = new Date(currentDate.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    let startDate = new Date(currentDate.getTime() - 0 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
     // Calculate the end date (5 days after today)
-    let endDate = new Date(currentDate.getTime() + 0 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    let endDate = new Date(currentDate.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
     // Construct the API request URL
     let URL = `http://localhost:3002/http://api.football-data.org/v4/matches?competitions=CL,PD,PL,BL1,SA,FL1&dateFrom=${startDate}&dateTo=${endDate}`;
