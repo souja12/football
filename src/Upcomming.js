@@ -10,93 +10,94 @@ const Allmatches = () => {
     let currentDate = new Date();
 
     // Calculate the start date (5 days before today)
-    let startDate = new Date(currentDate.getTime() - 0 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    let startDate = new Date(currentDate.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
     // Calculate the end date (5 days after today)
-    let endDate = new Date(currentDate.getTime() + 10 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    let endDate = new Date(currentDate.getTime() + 0 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
     // Construct the API request URL
     let URL = `http://localhost:3002/http://api.football-data.org/v4/matches?competitions=CL,PD,PL,BL1,SA,FL1&dateFrom=${startDate}&dateTo=${endDate}`;
 
     //const URL = 'http://localhost:3001/https://api.football-data.org/v4/competitions/2001/matches?status=FINISHED&limit=15';
 
-    // useEffect(() => {
-    //     hu()
-    // }, [])
-
-    // function hu() {
-    //     fetch(URL, {
-    //         method: 'GET',
-    //         headers: {
-    //             'X-Auth-Token': API_KEY,
-    //             'Content-Type': 'application/json'
-    //         },
-    //         mode: 'cors' // Add this line
-    //     })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             const matches = data.matches;
-    //             for (let i = 0; i < matches.length; i++) {
-    //                 const utcDate = new Date(matches[i].utcDate);
-    //                 const indianDate = utcDate.toLocaleString('en-IN', {
-    //                     timeZone: 'Asia/Kolkata',
-    //                     day: 'numeric',
-    //                     month: 'short',
-    //                     year: 'numeric',
-    //                     hour: 'numeric',
-    //                     minute: 'numeric'
-    //                 });
-    //                 matches[i].indianDate = indianDate;
-    //             }
-    //             console.log('new', matches);
-    //             setmatches(matches)
-    //         })
-    //         .catch(error => console.error(error));
-    // }
-
     useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const response = await fetch(
-              `https://apiv3.apifootball.com/?action=get_events&from=${startDate}&to=${endDate}&league_id=302,152&APIkey=f2b4bc263c450b1cf798be5cf34fcaef53981ed3ef1b058f760be617d009dc64`
-            );
-            const data = await response.json();
-            setmatches(data);
-          } catch (error) {
-            console.error('Error fetching fixtures:', error);
-          }
-        };
+        hu()
+    }, [])
+
+    function hu() {
+        fetch(URL, {
+            method: 'GET',
+            headers: {
+                'X-Auth-Token': API_KEY,
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors' // Add this line
+        })
+            .then(response => response.json())
+            .then(data => {
+                const matches = data.matches;
+                for (let i = 0; i < matches.length; i++) {
+                    const utcDate = new Date(matches[i].utcDate);
+                    const indianDate = utcDate.toLocaleString('en-IN', {
+                        timeZone: 'Asia/Kolkata',
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric'
+                    });
+                    matches[i].indianDate = indianDate;
+                }
+                console.log('new', matches);
+                setmatches(matches)
+            })
+            .catch(error => console.error(error));
+    }
+
+
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //       try {
+    //         const response = await fetch(
+    //           `https://apiv3.apifootball.com/?action=get_events&from=${startDate}&to=${endDate}&league_id=302,152&APIkey=ec03badef30fa94a1a73885df7b2853d17e767f052ff324dff7247150507f6bd`
+    //         );
+    //         const data = await response.json();
+    //         setmatches(data);
+    //       } catch (error) {
+    //         console.error('Error fetching fixtures:', error);
+    //       }
+    //     };
     
-        fetchData();
-      }, []);
+    //     fetchData();
+    //   }, []);
 
 
     const loadMoreMatches = () => {
         setVisibleMatches((prevVisibleMatches) => prevVisibleMatches + 10);
     };
-    console.log(matches);
+    console.log('up',matches);
     return (
         <div>
-            {matches.slice(0, visibleMatches).map((matches) => {
+             {matches.slice(0, visibleMatches).map((matches) => {
                 return (
                     <div class="containerr">
                         <div class="match">
                             <div class="match-header">
                                 <div class="match-status" style={{ backgroundColor: matches.status === 'TIMED' ? 'blue' : '#4caf50' }}>
-                                    {matches.match_status=''?'Timed' : 'Timed'}
+                                    {matches.status}
                                 </div>
                                 <div class="match-tournament">
-                                    <img src={matches.league_logo} />
-                                    {/* {matches.league_name} */}
+                                    <img src={matches.competition.emblem} />
+                                    {matches.competition.name}
                                 </div>
                             </div>
                             <div class="match-content">
                                 <div class="column">
                                     <div class="team team--home">
                                         <div class="team-logo">
-                                            <img src={matches.team_away_badge} />
+                                            <img src={matches.awayTeam.crest} />
                                         </div>
-                                        <h2 class="team-name" style={{ color: 'grey' }}>{matches.match_awayteam_name}</h2>
+                                        <h2 class="team-name" style={{ color: 'grey' }}>{matches.awayTeam.name}</h2>
                                     </div>
                                 </div>
                                 <div class="column">
@@ -107,23 +108,23 @@ const Allmatches = () => {
                                         </div>
                                         <div class="match-score">
                                             <span class="match-score-number match-score-number--leading">
-                                                {matches.match_hometeam_ft_score}
+                                                {matches.score.fullTime.away}
                                             </span>
                                             <span class="match-score-divider">:</span>
-                                            <span class="match-score-number">{matches.match_awayteam_score}</span>
+                                            <span class="match-score-number">{matches.score.fullTime.home}</span>
                                         </div>
                                         {/* <div class="match-time-lapsed">72'</div> */}
                                         <div class="match-referee">
-                                            Referee: <strong>{matches?.match_referee}</strong>
+                                            Referee: <strong>{matches?.referees[0]?.name}</strong>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="column">
                                     <div class="team team--away">
                                         <div class="team-logo">
-                                            <img src={matches.team_home_badge} />
+                                            <img src={matches.homeTeam.crest} />
                                         </div>
-                                        <h2 class="team-name" style={{ color: 'grey' }}>{matches.match_hometeam_name}</h2>
+                                        <h2 class="team-name" style={{ color: 'grey' }}>{matches.homeTeam.name}</h2>
                                     </div>
                                 </div>
                             </div>
